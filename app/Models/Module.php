@@ -21,7 +21,7 @@ class Module extends Model
     // Un module appartient à une spécialité
     public function specialty()
     {
-        return $this->belongsTo(specialty::class);
+        return $this->belongsTo(Specialty::class);
     }
     public function student()
     {

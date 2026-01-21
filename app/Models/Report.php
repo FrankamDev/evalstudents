@@ -19,7 +19,7 @@ class Report extends Model
         'remark',
     ];
 
-    // Relations
+
     public function student()
     {
         return $this->belongsTo(Student::class);
