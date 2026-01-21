@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use App\Models\Student;
 use App\Models\AcademicYear;
-use App\Models\Evaluation;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentBulletinExport;
@@ -14,7 +12,7 @@ use App\Models\Evaluations;
 
 class ReportController extends Controller
 {
-    // Affiche tous les étudiants
+
     public function index()
     {
         $students = Student::with(['specialty', 'academicYear'])
@@ -25,7 +23,7 @@ class ReportController extends Controller
         return view('dashboard.report.index', compact('students'));
     }
 
-    // Affiche le bulletin d'un étudiant spécifique
+
     public function show(Student $student)
     {
         $activeYear = AcademicYear::where('is_active', true)->first();
@@ -34,7 +32,7 @@ class ReportController extends Controller
             return redirect()->route('reports.index')->with('error', 'Aucune année académique active.');
         }
 
-        // Génère ou récupère les bulletins pour cet étudiant (S1 et S2)
+
         $this->generateOrUpdateForStudent($student->id, $activeYear->id);
 
         $reports = Report::with('academicYear')
@@ -45,7 +43,7 @@ class ReportController extends Controller
         return view('dashboard.report.show', compact('student', 'reports'));
     }
 
-    // Génère ou met à jour les bulletins pour un étudiant
+
     protected function generateOrUpdateForStudent($studentId, $academicYearId)
     {
         foreach ([1, 2] as $semester) {
@@ -86,7 +84,7 @@ class ReportController extends Controller
         }
     }
 
-    // Export PDF d'un bulletin
+
     public function exportPdf(Report $report)
     {
         $pdf = Pdf::loadView('pdf.bulletin', compact('report'))
@@ -95,7 +93,7 @@ class ReportController extends Controller
         return $pdf->download('bulletin_' . $report->student->matricule . '_S' . $report->semester . '.pdf');
     }
 
-    // Export Excel d'un bulletin
+
     public function exportExcel(Report $report)
     {
         return Excel::download(new StudentBulletinExport($report), 'bulletin_' . $report->student->matricule . '_S' . $report->semester . '.xlsx');

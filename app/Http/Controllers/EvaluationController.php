@@ -46,7 +46,7 @@ class EvaluationController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Vérification unicité (bien que déjà dans migration)
+
         $exists = Evaluations::where([
             'student_id'       => $request->student_id,
             'module_id'        => $request->module_id,

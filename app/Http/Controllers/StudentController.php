@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Specialty;
 use App\Models\AcademicYear;
+use App\Models\Evaluations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -97,12 +98,12 @@ class StudentController extends Controller
             ->with('success', 'Étudiant modifié avec succès !');
     }
 
-    // Ajoutez cette méthode dans ReportController
+
 
     public function generateAutomatic(Request $request)
     {
         $academicYearId = $request->academic_year_id ?? AcademicYear::where('is_active', true)->first()?->id;
-        $semester = $request->semester ?? null; // Si null, génère pour les deux semestres
+        $semester = $request->semester ?? null;
 
         if (!$academicYearId) {
             return back()->with('error', 'Aucune année académique active trouvée.');
@@ -116,21 +117,21 @@ class StudentController extends Controller
             $semestersToProcess = $semester ? [$semester] : [1, 2];
 
             foreach ($semestersToProcess as $sem) {
-                // Récupérer les évaluations pour ce semestre
-                $evaluations = Evaluation::where([
+
+                $evaluations = Evaluations::where([
                     'student_id'       => $student->id,
                     'academic_year_id' => $academicYearId,
                     'semester'         => $sem,
                 ])->get();
 
                 if ($evaluations->isEmpty()) {
-                    continue; // Pas d'évaluations pour ce semestre
+                    continue;
                 }
 
-                // Calcul de la moyenne
+
                 $average = $evaluations->avg('note');
 
-                // Décision et mention
+
                 $decision = $average >= 10 ? 'Admis' : 'Ajourné';
                 $mention = match (true) {
                     $average >= 16 => 'Très Bien',
@@ -151,7 +152,7 @@ class StudentController extends Controller
                         'average'  => $average,
                         'decision' => $decision,
                         'mention'  => $mention,
-                        'remark'   => 'Généré automatiquement', // Ou vide, personnalisable plus tard
+                        'remark'   => 'Généré automatiquement',
                     ]
                 );
 
